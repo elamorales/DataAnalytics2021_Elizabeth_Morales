@@ -1,0 +1,81 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+Lab 8
+
+lab1_svm12
+```{r}
+# load the kernlab package
+library(kernlab)
+# train the SVM
+svp <- ksvm(xtrain,ytrain,type="C-svc",kernel='vanilladot',C=100,scaled=c())
+#Look and understand what svp contains
+# General summary
+svp
+# Attributes that you can access
+attributes(svp)
+# For example, the support vectors
+alpha(svp)
+alphaindex(svp)
+b(svp)
+# Use the built-in function to pretty-plot the classifier
+plot(svp,data=xtrain)
+
+```
+
+lab1_svm13
+```{r}
+cv.folds <- function(n,folds=3)
+ ## randomly split the n samples into folds
+ {
+  split(sample(n),rep(1:folds,length=length(y)))
+ }
+#Write a 
+function cv.ksvm <- function(x,y,folds=3,...) 
+#which returns a vector ypred of predicted decision score for all points by k-fold cross-validation.
+#Compute the various performance of the SVM by 5-fold cross-validation. Alter- natively, the ksvm function can automatically compute the k-fold cross-validation accuracy:
+svp <- ksvm(x,y,type="C-svc",kernel=â€™vanilladotâ€™,C=1,scaled=c(),cross=5)
+print(cross(svp))
+```
+
+PCA on Boston dataset
+```{r}
+install.packages('MASS')
+data(Boston, package="MASS")
+# Read the documentation of Boston dataset in RStudio to understand the dataset
+help(Boston)
+# Principal Component Analysis
+# the prcomp() fucntion computes the principal components and we have turned on scalling
+# Read the documentation for prcompt() function in RStudio
+help(prcomp)
+pca_out <- prcomp(Boston,scale. = T)
+# pca_out shows the loadings that used.
+pca_out
+plot(pca_out)
+
+# plotting using the biplot()
+# Read the documentation for biplot() function in RStudio
+help(biplot)
+
+biplot(pca_out, scale = 0)
+boston_pc <- pca_out$x
+boston_pc
+# boston_pc has the Principal Components having the same number of rows in the original dataset
+head(boston_pc)
+summary(boston_pc)
+
+```
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
