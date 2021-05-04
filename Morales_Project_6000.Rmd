@@ -1,0 +1,499 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+Assignment 6: Term Project
+
+```{r}
+income <- read.csv("C:/Users/morale3/Desktop/Data_Analytics/Project/income_2019.csv")
+require (dplyr)
+require(ggplot2)
+library(ggplot2)
+```
+
+
+```{r}
+# Median Household Income
+
+# Exploring Distribution
+#View(income)
+summary(income)
+
+med_inc <- income$Median_Household_Income_2019
+med_inc = as.numeric(gsub("[\\$,]","",med_inc))
+
+fivenum(med_inc)
+inc_mean <- mean(med_inc)
+inc_mode <- mode(med_inc)
+inc_median <- median(med_inc)
+summarise(income, inc_mean = mean(med_inc, na.rm = TRUE))
+
+stem_m = stem(med_inc)
+hist(med_inc, seq(40000., 140000., 5000.),main = "Histogram of Median Household Income", xlab = "Income ($)", ylab = "Frequency")
+boxplot(med_inc, main = "Boxplot for Median Household Income", ylab = "Income ($)")
+shapiro.test(med_inc)
+
+plot(ecdf(med_inc), main = "Cumulative Density Function for Median Household ", cex.main = 0.8, xlab = "Income ($)", ylab = "Cummulative Probability")
+par(pty = "s")
+qqnorm(med_inc, main = " Normal Quantile-Quantile for Median Household Income",ylab= "Income ($)"); qqline(med_inc)
+x <-seq(40000,140000,5000)
+qqplot(qt(ppoints(250),df=5),x,main="Quantile-Quantile for Median Household Income")
+qqline(x)
+```
+
+```{r}
+# Unemployment Rate 2019
+
+# All values are percentages
+# Exploring Distribution
+un_rate <- income$X2019
+
+fivenum(un_rate)
+un_rate_mean <- mean(un_rate)
+un_rate_mode <- mode(un_rate)
+un_rate_median <- median(un_rate)
+summarise(income, un_rate_mean = mean(un_rate, na.rm = TRUE))
+
+stem(un_rate)
+hist(un_rate, seq(0., 20., 0.5),main = "Histogram of Unemployment Rate 2019 ", xlab = "Unemployment Rate (%)", ylab = "Frequency")
+boxplot(un_rate, main = "Boxplot for Unemployment Rate 2019 ", ylab = "Unemployment Rate (%)")
+shapiro.test(un_rate)
+
+plot(ecdf(un_rate), main = "Cumulative Density Function for Unemployment Rate 2019 ", cex.main = 0.8, xlab = "Unemployment Rate (%)", ylab = "Cummulative Probability")
+par(pty = "s")
+qqnorm(un_rate, main = " Normal Quantile-Quantile for Unemployment Rate 2019 ",ylab= "Unemployment Rate (%)"); qqline(un_rate)
+x <-seq(0,20,0.5)
+qqplot(qt(ppoints(250),df=5),x,xlab="Q-Q plot for Unemployment Rate")
+qqline(x)
+help("ecdf")
+```
+
+```{r}
+# High School Graduation Rate
+
+grate <- read.csv("C:/Users/morale3/Desktop/Data_Analytics/Project/grad_rate_2019.csv")
+
+# Exploring Distribution
+#View(grate)
+rate <- grate$Cohort.Graduation.Rate
+rate = as.numeric(sub("%","",rate))
+
+fivenum(rate)
+grad_mean <- mean(rate)
+grad_mode <- mode(rate)
+grad_median <- median(rate)
+summarise(grate, grad_mean = mean(rate, na.rm = TRUE))
+
+stem(rate)
+hist(rate, seq(40.,100., 5.),main = "Histogram of Graduation Rate (2018-2019) ", xlab = "Graduation Rate (%)", ylab = "Frequency")
+boxplot(rate, main = "Boxplot for Graduation Rate (2018-2019) ", ylab = "Graduation Rate  (%)")
+shapiro.test(rate)
+
+plot(ecdf(rate), main = "Cumulative Density Function for Graduation Rate (2018-2019) ", cex.main = 0.8, xlab = "Graduation Rate  (%)", ylab = "Cummulative Probability")
+par(pty = "s")
+qqnorm(rate, main = " Normal Quantile-Quantile for Graduation Rate (2018-2019) ",ylab= "Graduation Rate  (%)"); qqline(rate)
+x1 <-seq(40,100,5)
+qqplot(qt(ppoints(250),df=5),x,xlab="Q-Q plot for graduation rate")
+qqline(x)
+
+```
+
+```{r}
+# Graduates Meeting UC & CSU Requirements
+
+# Exploring Distribution
+req_uc <- grate$Graduates.Meeting.UC.CSU.Requirements
+req_uc = as.numeric(sub(",","", req_uc))
+
+students <- grate$Cohort.Students
+students = as.numeric(sub(",","",students))
+
+req_per <- req_uc[c(1:57)]/students[c(1:57)]*100 # percentage 
+
+fivenum(req_per)
+req_per_mean <- mean(req_per)
+req_per_mode <- mode(req_per)
+req_per_median <- median(req_per)
+summarise(grate, req_per_mean = mean(req_per, na.rm = TRUE))
+
+stem(req_per)
+hist(req_per, seq(5.,70., 1.),main = "Histogram of Graduates Meeting UC & CSU Requirements ", xlab = "Percentage of Students", ylab = "Frequency")
+boxplot(req_per, main = "Boxplot for Graduates Meeting UC & CSU Requirements ", ylab = "Percentage of Students")
+shapiro.test(req_per)
+
+plot(ecdf(req_per), main = "Cumulative Density Function for Graduates Meeting UC & CSU Requirements ", cex.main = 0.8, xlab = "Percentage of Students", ylab = "Cummulative Probability")
+par(pty = "s")
+qqnorm(req_per, main = " Normal Quantile-Quantile for Graduates Meeting UC & CSU Requirements ",ylab= "Percentage of Students", cex.main = 0.8); qqline(req_per)
+x1 <-seq(5,70,1)
+qqplot(qt(ppoints(250),df=5),x,xlab="Q-Q plot for Percentage of Students Meeting UC & CSU Requirements")
+qqline(x)
+
+```
+
+```{r}
+#Graduates Earning a Golden State Seal Merit Diploma
+
+#Exploring Distribution
+merit <- grate$Graduates.Earning.a.Golden.State.Seal.Merit.Diploma
+merit = as.numeric(sub(",","", merit))
+
+students <- grate$Cohort.Students
+students = as.numeric(sub(",","",students))
+
+merit_per <- merit[c(1:57)]/students[c(1:57)]*100 # percentage 
+
+fivenum(merit_per)
+merit_per_mean <- mean(merit_per)
+merit_per_mode <- mode(merit_per)
+merit_per_median <- median(merit_per)
+summarise(grate, merit_per_mean = mean(merit_per, na.rm = TRUE))
+
+stem(merit_per)
+hist(merit_per, seq(0.,40., 0.5),main = "Histogram of Graduates Earning a Golden State Seal Merit Diploma ", xlab = "Percentage of Students", ylab = "Frequency")
+boxplot(merit_per, main = "Boxplot for Graduates Earning a Golden State Seal Merit Diploma ", ylab = "Percentage of Students")
+shapiro.test(merit_per)
+
+plot(ecdf(merit_per), main = "Cumulative Density Function for Graduates Earning a Golden State Seal Merit Diploma ", cex.main = 0.8, xlab = "Percentage of Students", ylab = "Cummulative Probability")
+par(pty = "s")
+qqnorm(merit_per, main = " Normal Quantile-Quantile for Graduates Earning a Golden State Seal Merit Diploma ",cex.main = 0.8,ylab= "Percentage of Students"); qqline(merit_per)
+x1 <-seq(0,40,0.5)
+qqplot(qt(ppoints(250),df=5),x,xlab="Q-Q plot for Percentage of Graduates Earning a Golden State Seal Merit Diploma")
+qqline(x)
+```
+
+```{r}
+# Create a new dataframe that includes each variable rate by county
+
+inc <- med_inc[c(2,4:59)]     # median income
+uemploy <- un_rate[c(2,4:59)] # unemployment rate
+grad <- c(rate)               # grad rate
+req <- c(req_per)             # Grads meeting UC requirements
+s_merit <- c(merit_per)       # Grads earning Golden State Seal Merit Diploma
+
+county <-grate$Name
+
+county_data <-data.frame(county,inc,uemploy,grad,req,s_merit)
+#View(county_data)
+
+summary(county_data)
+
+```
+
+```{r}
+# Regression: Linear Basis and Least-Squares Constraints
+
+# Regression between graduation rate and median household income
+mm <- lm(grad~inc)
+mm
+summary(mm)$coef
+summary(mm)$r.squared
+plot(grad~inc, main = "Linear Regression for Graduation Rate and Income", xlab = "Income ($)", ylab ="Graduation Rate (%)")
+abline(mm)
+
+# Regression between graduation rate and unemployment rate
+nn <- lm(grad~uemploy)
+nn
+summary(nn)$coef
+summary(nn)$r.squared
+plot(grad~uemploy, main = "Linear Regression for Graduation Rate and Unemployment Rate", xlab = "Unemployment Rate (%)", ylab ="Graduation Rate (%)")
+abline(nn)
+
+# Regression between grads meeting UC requirements and median household income
+pp <- lm(req~inc)
+pp
+summary(pp)$coef
+summary(pp)$r.squared
+plot(req~inc, main = "Linear Regression for Percentage of Students Meeting State University Requirements and Income", xlab = "Income ($)", ylab ="Students (%)",cex.main = 0.8)
+abline(pp)
+
+# Regression between grads meeting UC requirements and unemployment rate
+qq <- lm(req~uemploy)
+qq
+summary(qq)$coef
+summary(qq)$r.squared
+plot(req~uemploy, main = "Linear Regression for Percentage of Students Meeting State University Requirements and Unemployment Rate", xlab = "Unemployment Rate (%)", ylab ="Students (%)", cex.main = 0.7)
+abline(qq )
+
+# Regression between grads earning golden state seal merit diploma and median household income
+rr <- lm(s_merit~inc)
+rr
+summary(rr)$coef
+summary(rr)$r.squared
+plot(s_merit~inc,main = "Linear Regression for Percentage of Students Receiving Merit Diploma and Income", xlab = "Income (%)", ylab ="Students (%)", cex.main = 0.8)
+abline(rr)
+
+# Regression between grads earning golden state seal merit diploma and unemployment rate
+ss <- lm(s_merit~uemploy)
+ss
+summary(ss)$coef
+summary(ss)$r.squared
+plot(s_merit~uemploy,main = "Linear Regression for Percentage of Students Receiving Merit Diploma and Unemployment Rate", xlab = "Unemployment Rate (%)", ylab ="Students (%)", cex.main = 0.8)
+abline(ss)
+```
+
+```{r}
+# Mulivariate Regression
+
+# Graduation rate based on median income and unemployment rate
+r1 <- lm(grad ~ inc + uemploy)
+r1
+summary(r1)$coef
+summary(r1)$r.squared
+summary(r1)$adj.r.squared
+
+# Grads meeting UC requirements based on median income and unemployment rate
+r2 <- lm(req ~ inc + uemploy)
+r2
+summary(r2)$coef
+summary(r2)$r.squared
+summary(r2)$adj.r.squared
+
+# Grads earning golden state seal merit diploma based on income and unemployment rate
+r3 <- lm(s_merit ~ inc + uemploy)
+r3
+summary(r3)$coef
+summary(r3)$r.squared
+summary(r3)$adj.r.squared
+```
+
+```{r}
+# Knn Classifier
+require(class)
+library(class)
+library(ggplot2)
+require(acc)
+library(acc)
+require(Metrics)
+library(Metrics)
+library(ie2misc)
+require(caret)
+library(caret)
+
+c_data <-data.frame(county,inc,uemploy,grad,req,s_merit)
+#View(c_data)
+
+# Income
+c_data$inc <- cut(c_data$inc, br = c(-1,60000,100000,150000), labels = c("low income", "medium income","high income"))
+summary(c_data$inc)
+plot(c_data$inc, main = "Income Grouping", xlab = "Income ($)", ylab = "Frequency")
+
+# Unemployment Rate
+c_data$uemploy <- cut(c_data$uemploy, br = c(-1,6,14,18), labels = c("low unemployment rate", "moderate unemployment rate","high unemployment rate"))
+summary(c_data$uemploy)
+plot(c_data$uemploy, main = "Unemployment Rate Grouping", xlab = "Unemployment Rate (%)", ylab = "Frequency")
+
+# Graduation rate
+c_data$grad <- cut(c_data$grad, br = c(-1,65,85,100), labels = c("low grad rate", "moderate grad rate","high grad rate"))
+summary(c_data$grad)
+plot(c_data$grad, main = "Graduation Rate Grouping", xlab = "Graduation Rate (%)", ylab = "Frequency")
+
+# Students meeting UC & CSU requirements
+c_data$req <- cut(c_data$req, br = c(-1,35,55,80,100), labels = c("very low %","low %", "moderate %", "high %"))
+summary(c_data$req)
+plot(c_data$req, main = "Students Meeting UC & CSU Requirements Grouping", xlab = "Students (%)", ylab = "Frequency", cex.sub = 0.5)
+
+# Students receiving Golden State Seal
+c_data$s_merit <- cut(c_data$s_merit, br = c(-1,30,100), labels = c("very low %", "moderate to high %"))
+summary(c_data$s_merit)
+plot(c_data$s_merit, main = "Students Receiving Golden State Seal Merit Diplomas", xlab = "Students (%)", ylab = "Frequency", cex.sub = 0.5)
+
+# Prediction for Graduation Rate
+cd <- county_data
+#View(cd)
+cd$county <- NULL
+
+normalize <- function(x)
+  {
+  return((x-min(x))/(max(x)-min(x)))
+  }
+
+cd[1:5]<- as.data.frame(lapply(cd[1:5], normalize))
+summary(cd$grad)
+
+ind<-sample(2,nrow(cd), replace= TRUE, prob=c(0.7,0.3))
+KNNtrain <- cd[ind==1,]
+KNNtest <- cd[ind==2,]
+KNNpred_grad <- knn(train=KNNtrain[1:5], test = KNNtest[1:5],cl = KNNtrain$grad,k=36)
+KNNpred_grad
+table(KNNpred_grad)
+
+mae(as.numeric(KNNtest$grad),as.numeric(KNNpred_grad))
+mean((as.numeric(KNNtest$grad)-as.numeric(KNNpred_grad))^2)
+
+ACC.KNNpred_grad <- 100 * sum( KNNtest$grad == KNNpred_grad)/NROW(KNNtest$grad)
+ACC.KNNpred_grad
+
+#Prediction for Students meeting UC & CSU requirements
+summary(cd$req)
+
+KNNtrain_r <- cd[ind==1,]
+KNNtest_r <- cd[ind==2,]
+KNNpred_req <- knn(train=KNNtrain_r[1:5], test = KNNtest_r[1:5],cl = KNNtrain$req,k=36)
+KNNpred_req
+KNNpred_req
+table(KNNpred_req)
+
+mae((as.numeric(KNNtest_r$req)),(as.numeric(KNNpred_req)))
+mean((as.numeric(KNNtest_r$req)-as.numeric(KNNpred_req))^2)
+
+ACC.KNNpred_req <- 100 * sum( KNNtest_r$req == KNNpred_req)/NROW(KNNtest_r$req)
+ACC.KNNpred_req
+
+# Prediction for Students receiving Golden State Medal
+summary(cd$s_merit)
+
+KNNtrain_s <- cd[ind==1,]
+KNNtest_s <- cd[ind==2,]
+KNNpred_s <- knn(train=KNNtrain_s[1:5], test = KNNtest_s[1:5],cl = KNNtrain$s_merit,k=36)
+KNNpred_s
+KNNpred_s
+table(KNNpred_s)
+
+mae(as.numeric(KNNtest_s$s_merit),as.numeric(KNNpred_s))
+mean((as.numeric(KNNtest_s$s_merit)-as.numeric(KNNpred_s))^2)
+
+
+ACC.KNNpred_s <- 100 * sum( KNNtest_s$s_merit == KNNpred_s)/NROW(KNNtest_s$s_merit)
+ACC.KNNpred_s
+```
+
+```{r}
+# Regression Trees & Cross Validation
+require(tree)
+library(tree)
+set.seed(1)
+
+# Regression tree for graduation rate based on income and unemployment rate
+tree.grad = tree(grad ~ inc+uemploy, data = county_data)
+summary(tree.grad)
+plot(tree.grad, main = "Graduation Rate")
+text(tree.grad, pretty = 0, cex = 0.75)
+
+cv.grad = cv.tree(tree.grad)
+plot(cv.grad$size, cv.grad$dev, typ = 'b')
+best.size <- cv.grad$size[which(cv.grad$dev==min(cv.grad$dev))]
+best.size
+
+prune.grad = prune.tree(tree.grad, best = best.size)
+plot(prune.grad, main = "Graduation Rate - Pruned (%)")
+text(prune.grad, pretty = 0)
+
+pgrad <- predict(tree.grad, newdata = county_data)
+#table(county_data$grad, pgrad)
+grad.test = county_data$grad
+plot(pgrad,grad.test, main = "Graduation Rate Predictions", xlab = "Graduation Rate Predictions (%)", ylab = "Actual Values (%) ")
+abline(0,1)
+mean((pgrad-grad.test)^2)
+
+# Regression tree for students that meet UC & CSU requirements based on income and unemployment rate
+tree.req = tree(req ~ inc+uemploy, data = county_data)
+summary(tree.req)
+plot(tree.req, main ="Percentage of Students meeting UC & CSU Requirements (%)")
+text(tree.req, pretty = 0, cex = 0.75)
+
+cv.req = cv.tree(tree.req)
+plot(cv.req$size, cv.req$dev, typ = 'b')
+best.sizer <- cv.req$size[which(cv.req$dev==min(cv.req$dev))]
+best.sizer
+
+prune.req = prune.tree(tree.req, best = best.sizer)
+plot(prune.req,main ="Percentage of Students meeting UC & CSU Requirements - Pruned (%)")
+text(prune.req, pretty = 0)
+
+preq <- predict(tree.req, newdata = county_data)
+#table(county_data$req, preq)
+req.test = county_data$req
+plot(preq,req.test,main = "Students meeting Requirements Predictions", xlab = "Predictions (%)", ylab = "Actual Values (%) ")
+abline(0,1)
+mean((preq-req.test)^2)
+
+# Regression tree for students receiving merit based on income an unemployment rate
+tree.merit = tree(s_merit ~ inc+uemploy, data = county_data)
+summary(tree.merit)
+plot(tree.merit, main = "Percentage of Students receiving Merit Diploma (%)")
+text(tree.merit, pretty = 0, cex = 0.75)
+
+cv.merit = cv.tree(tree.merit)
+plot(cv.merit$size, cv.merit$dev, typ = 'b')
+best.sizem <- cv.merit$size[which(cv.merit$dev==min(cv.merit$dev))]
+best.sizem
+
+prune.merit = prune.tree(tree.merit, best = best.sizem)
+plot(prune.merit, main  = "Percentage of Students receiving Merit Diploma(%)")
+text(prune.merit, pretty = 0)
+
+pmerit <- predict(tree.merit, newdata = county_data)
+#table(county_data$s_merit, pmerit)
+merit.test = county_data$s_merit
+plot(pmerit,merit.test, main = "Students receiving Merit Diploma Predictions", xlab = "Predictions (%)", ylab = "Actual Values (%)")
+abline(0,1)
+mean((pmerit-merit.test)^2)
+```
+
+```{r}
+# Bagging and Random Forest
+require(randomForest)
+library(randomForest)
+set.seed(1)
+
+# Bagging and Random Forest for graduation rate
+bag.grad = randomForest(grad ~ inc+uemploy, data = county_data, importance = TRUE)
+bag.grad
+pr_grad = predict(bag.grad, newdata = county_data)
+plot(pr_grad,grad.test, main = "Graduation Rate Predictions", xlab = "Graduation Rate Predictions (%)", ylab = "Actual Values (%) ")
+abline(0,1)
+mean((pr_grad-grad.test)^2)
+
+bad.grad = randomForest(grad ~ inc+uemploy, data= county_data, ntree =25)
+bad.grad
+pr_grad25 = predict(bad.grad, newdata = county_data)
+mean((pr_grad25-grad.test)^2)
+
+importance(bag.grad)
+varImpPlot(bag.grad, main = "Graduation Rate")
+
+# Bagging and Random Forest for students meeting UC and CSU requirements
+bag.req = randomForest(req ~ inc+uemploy, data = county_data, importance = TRUE)
+bag.req
+pr_req = predict(bag.req, newdata = county_data)
+plot(pr_req,req.test,main = "Students meeting Requirements Predictions", xlab = "Predictions (%)", ylab = "Actual Values (%) ")
+abline(0,1)
+mean((pr_req-req.test)^2)
+
+bad.req = randomForest(req ~ inc+uemploy, data= county_data, ntree =25)
+bad.req
+pr_req25 = predict(bad.req, newdata = county_data)
+mean((pr_req25-req.test)^2)
+
+importance(bag.req)
+varImpPlot(bag.req,main = "Students meeting Requirements Predictions")
+
+# Bagging and Random Forest for students receiving merit
+bag.merit = randomForest(s_merit ~ inc+uemploy, data = county_data, importance = TRUE)
+bag.merit
+pr_merit = predict(bag.merit, newdata = county_data)
+plot(pr_merit,merit.test,main =  "Students receiving Merit Diploma Predictions", xlab = "Predictions (%)", ylab = "Actual Values (%)")
+abline(0,1)
+mean((pr_merit-merit.test)^2)
+
+bad.merit = randomForest(merit ~ inc+uemploy, data= county_data, ntree =25)
+bad.merit
+pr_merit25 = predict(bad.merit, newdata = county_data)
+mean((pr_merit25-merit.test)^2)
+
+importance(bag.merit)
+varImpPlot(bag.merit,main =  "Students receiving Merit Diploma Predictions")
+
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
